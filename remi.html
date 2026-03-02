@@ -2,169 +2,95 @@
 <html lang="sr">
 
 <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Rezultati</title>
-
-        <style>
-                body {
-                        font-family: Arial, sans-serif;
-                        background: #f1f5f9;
-                        margin: 0;
-                        padding: 20px;
-                }
-
-                h1 {
-                        color: #2563eb;
-                }
-
-                .container {
-                        max-width: 600px;
-                        margin: auto;
-                }
-
-                .card {
-                        background: white;
-                        padding: 16px;
-                        border-radius: 16px;
-                        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-                        margin-bottom: 12px;
-                }
-
-                .card.first {
-                        background: #e0f2fe;
-                }
-
-                .row {
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                }
-
-                input {
-                        padding: 8px;
-                        border-radius: 8px;
-                        border: 1px solid #ccc;
-                        width: 100%;
-                        box-sizing: border-box;
-                }
-
-                button {
-                        padding: 8px 12px;
-                        border-radius: 8px;
-                        border: none;
-                        cursor: pointer;
-                }
-
-                .add-btn {
-                        background: #2563eb;
-                        color: white;
-                }
-
-                .delete-btn {
-                        background: #dc2626;
-                        color: white;
-                }
-
-                .score-btn {
-                        background: #16a34a;
-                        color: white;
-                }
-
-                .flex {
-                        display: flex;
-                        gap: 8px;
-                }
-
-                .score-row {
-                        margin-top: 12px;
-                }
-        </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rezultati</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-        <div class="container">
-                <h1>Rezultati</h1>
+    <div class="container">
+        <h1>Rezultati</h1>
 
-                <div class="flex">
-                        <input id="playerName" placeholder="Ime igrača">
-                        <button class="add-btn" onclick="addPlayer()">Dodaj</button>
-                </div>
-
-                <div id="players"></div>
+        <div class="flex">
+            <input id="playerName" placeholder="Ime igrača">
+            <button class="add-btn" onclick="addPlayer()">Dodaj</button>
         </div>
 
-        <script>
-                let players = JSON.parse(localStorage.getItem("players")) || [];
+        <div id="players"></div>
+    </div>
 
-                function savePlayers() {
-                        localStorage.setItem("players", JSON.stringify(players));
-                }
+    <script>
+        let players = JSON.parse(localStorage.getItem("players")) || [];
 
-                function addPlayer() {
-                        const nameInput = document.getElementById("playerName");
-                        const name = nameInput.value.trim();
-                        if (!name) return;
+        function savePlayers() {
+            localStorage.setItem("players", JSON.stringify(players));
+        }
 
-                        players.push({ name: name, totalScore: 0 });
-                        nameInput.value = "";
-                        savePlayers();
-                        render();
-                }
+        function addPlayer() {
+            const nameInput = document.getElementById("playerName");
+            const name = nameInput.value.trim();
+            if (!name) return;
 
-                function deletePlayer(index) {
-                        players.splice(index, 1);
-                        savePlayers();
-                        render();
-                }
+            players.push({ name: name, totalScore: 0 });
+            nameInput.value = "";
+            savePlayers();
+            render();
+        }
 
-                function addScore(index) {
-                        const input = document.getElementById("score-" + index);
-                        const value = parseInt(input.value);
-                        if (isNaN(value)) return;
+        function deletePlayer(index) {
+            players.splice(index, 1);
+            savePlayers();
+            render();
+        }
 
-                        players[index].totalScore += value;
-                        input.value = "";
-                        savePlayers();
-                        render();
-                }
+        function addScore(index) {
+            const input = document.getElementById("score-" + index);
+            const value = parseInt(input.value);
+            if (isNaN(value)) return;
 
-                function render() {
-                        const container = document.getElementById("players");
-                        container.innerHTML = "";
+            players[index].totalScore += value;
+            input.value = "";
+            savePlayers();
+            render();
+        }
 
-                        players.sort((a, b) => a.totalScore - b.totalScore);
+        function render() {
+            const container = document.getElementById("players");
+            container.innerHTML = "";
 
-                        players.forEach((player, index) => {
-                                const card = document.createElement("div");
-                                card.className = "card" + (index === 0 ? " first" : "");
+            players.sort((a, b) => a.totalScore - b.totalScore);
 
-                                card.innerHTML = `
-            <div class="row">
-                <div>
-                    <strong>${index + 1}. ${player.name}</strong><br>
-                    Ukupno: ${player.totalScore}
-                </div>
-                <button class="delete-btn" onclick="deletePlayer(${index})">
-                    Obriši
-                </button>
-            </div>
+            players.forEach((player, index) => {
+                const card = document.createElement("div");
+                card.className = "card" + (index === 0 ? " first" : "");
 
-            <div class="flex score-row">
-                <input id="score-${index}" type="number" placeholder="Rezultat runde">
-                <button class="score-btn" onclick="addScore(${index})">
-                    Upiši
-                </button>
-            </div>
-        `;
+                card.innerHTML = `
+                    <div class="row">
+                        <div>
+                            <strong>${index + 1}. ${player.name}</strong><br>
+                            Ukupno: ${player.totalScore}
+                        </div>
+                        <button class="delete-btn" onclick="deletePlayer(${index})">
+                            Obriši
+                        </button>
+                    </div>
 
-                                container.appendChild(card);
-                        });
-                }
+                    <div class="flex score-row">
+                        <input id="score-${index}" type="number" placeholder="Rezultat runde">
+                        <button class="score-btn" onclick="addScore(${index})">
+                            Upiši
+                        </button>
+                    </div>
+                `;
 
-                render();
-        </script>
+                container.appendChild(card);
+            });
+        }
+
+        render();
+    </script>
 
 </body>
 
